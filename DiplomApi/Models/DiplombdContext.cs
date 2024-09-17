@@ -18,13 +18,14 @@ public partial class DiplombdContext : DbContext
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
-    public class PhoneNumberInput
+
+    public class EmailInput
     {
-        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
     }
     public class AccountInput
     {
-        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 
@@ -44,13 +45,12 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Token)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("token");
+            entity.Property(e => e.Email)
+                .HasMaxLength(60)
+                .HasColumnName("email");
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .HasColumnName("password");
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("phone_number");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
@@ -63,6 +63,10 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(11)
+                .IsUnicode(false)
+                .HasColumnName("phone_number");
 
             entity.HasOne(d => d.TokenNavigation).WithOne(p => p.UserProfile)
                 .HasForeignKey<UserProfile>(d => d.Token)

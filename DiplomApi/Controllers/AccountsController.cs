@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiplomApi.Models;
 using static DiplomApi.Models.DiplombdContext;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace DiplomApi.Controllers
 {
@@ -22,10 +23,10 @@ namespace DiplomApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<object>> CheckAccount([FromBody] PhoneNumberInput input)
+        public async Task<ActionResult<object>> CheckAccount([FromBody] EmailInput input)
         {
             var existingAccount = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.PhoneNumber == input.PhoneNumber);
+                .FirstOrDefaultAsync(a => a.Email == input.Email);
 
             if (existingAccount != null)
             {
@@ -48,7 +49,7 @@ namespace DiplomApi.Controllers
         {
             // Проверяем, существует ли аккаунт с указанным номером телефона
             var existingAccount = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.PhoneNumber == input.PhoneNumber);
+                .FirstOrDefaultAsync(a => a.Email == input.Email);
 
             if (existingAccount.Password != input.Password) 
             {

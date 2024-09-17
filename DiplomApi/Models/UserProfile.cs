@@ -9,5 +9,7 @@ public partial class UserProfile
 
     public string? Name { get; set; }
 
+    public string? PhoneNumber { get; set; }
+
     public virtual Account TokenNavigation { get; set; } = null!;
 }
