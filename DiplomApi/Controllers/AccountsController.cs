@@ -22,7 +22,7 @@ namespace DiplomApi.Controllers
             _context = context;
         }
 
-        [HttpPost("login")]
+        [HttpPost("checkEmail")]
         public async Task<ActionResult<object>> CheckAccount([FromBody] EmailInput input)
         {
             var existingAccount = await _context.Accounts
@@ -79,6 +79,81 @@ namespace DiplomApi.Controllers
 
             return Ok(userProfiles);
         }
+        [HttpPost("createAccount")]
+        public async Task<ActionResult<object>> CreateAccount([FromBody] AccountInput input)
+        {
+            // Проверяем, существует ли аккаунт с указанным email
+            var existingAccount = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.Email == input.Email);
+
+            if (existingAccount != null)
+            {
+                // Если аккаунт уже существует, возвращаем 409 с сообщением
+                return Conflict(new
+                {
+                    code = 409,
+                    message = "Аккаунт с таким email уже существует"
+                });
+            }
+
+            // Создаем новый аккаунт
+            var newAccount = new Account
+            {
+                Email = input.Email,
+                Password = input.Password // Здесь можно добавить хеширование пароля для безопасности
+            };
+
+            // Сохраняем новый аккаунт в базе данных
+            _context.Accounts.Add(newAccount);
+            await _context.SaveChangesAsync();
+
+            // Возвращаем успешный ответ
+            return Ok(new
+            {
+                code = 200,
+                message = "Аккаунт успешно создан"
+            });
+        }
+
+        [HttpGet("login")]
+        public async Task<ActionResult<UserProfile>> Login()
+        {
+            var tokenString = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!Guid.TryParse(tokenString, out Guid token))
+            {
+                Console.WriteLine("Invalid token format");
+                return Unauthorized(new
+                {
+                    code = 401,
+                    message = "Неверный формат токена"
+                });
+            }
+
+            var userProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(up => up.Token == token);
+
+            if (userProfile == null)
+            {
+                Console.WriteLine("User profile not found for token");
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Профиль пользователя не найден"
+                });
+            }
+
+            Console.WriteLine($"User found: {userProfile.Name}");
+
+            return Ok(new
+            {
+                Name = userProfile.Name,
+                PhoneNumber = userProfile.PhoneNumber
+            });
+        }
+
+
+
     }
 
 }
