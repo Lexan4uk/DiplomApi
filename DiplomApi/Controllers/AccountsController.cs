@@ -123,9 +123,9 @@ namespace DiplomApi.Controllers
             if (!Guid.TryParse(tokenString, out Guid token))
             {
                 Console.WriteLine("Invalid token format");
-                return Unauthorized(new
+                return Ok(new
                 {
-                    code = 401,
+                    code = 202,
                     message = "Неверный формат токена"
                 });
             }
@@ -136,9 +136,9 @@ namespace DiplomApi.Controllers
             if (userProfile == null)
             {
                 Console.WriteLine("User profile not found for token");
-                return NotFound(new
+                return Ok(new
                 {
-                    code = 404,
+                    code = 201,
                     message = "Профиль пользователя не найден"
                 });
             }
@@ -151,6 +151,7 @@ namespace DiplomApi.Controllers
                 PhoneNumber = userProfile.PhoneNumber
             });
         }
+
 
 
 
