@@ -116,41 +116,130 @@ namespace DiplomApi.Controllers
         }
 
         [HttpGet("login")]
-        public async Task<ActionResult<UserProfile>> Login()
+        public async Task<ActionResult<object>> Login()
         {
             var tokenString = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             if (!Guid.TryParse(tokenString, out Guid token))
             {
-                Console.WriteLine("Invalid token format");
-                return Ok(new
+                return StatusCode(404, new
                 {
-                    code = 202,
+                    code = 404,
                     message = "Неверный формат токена"
                 });
             }
 
-            var userProfile = await _context.UserProfiles
-                .FirstOrDefaultAsync(up => up.Token == token);
+            // Ищем профиль пользователя по токену
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.Token == token);
 
             if (userProfile == null)
             {
-                Console.WriteLine("User profile not found for token");
                 return Ok(new
                 {
                     code = 201,
-                    message = "Профиль пользователя не найден"
+                    message = "Пользовательский профиль не найден"
                 });
             }
 
-            Console.WriteLine($"User found: {userProfile.Name}");
+            // Ищем аккаунт по тому же токену
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Token == token);
+
+            if (account == null)
+            {
+                return StatusCode(404, new
+                {
+                    code = 404,
+                    message = "Пользовательский профиль не найден"
+                });
+            }
 
             return Ok(new
             {
                 Name = userProfile.Name,
-                PhoneNumber = userProfile.PhoneNumber
+                PhoneNumber = userProfile.PhoneNumber,
+                Email = account.Email
             });
         }
+
+        [HttpPost("editName")]
+        public async Task<ActionResult<object>> EditName([FromBody] EditName input)
+        {
+            // Извлекаем токен из заголовка запроса
+            var tokenString = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!Guid.TryParse(tokenString, out Guid token))
+            {
+                return BadRequest(new
+                {
+                    code = 400,
+                    message = "Неверный формат токена"
+                });
+            }
+
+            // Ищем профиль пользователя по токену
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.Token == token);
+
+            if (userProfile == null)
+            {
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Пользовательский профиль не найден"
+                });
+            }
+
+            // Обновляем имя пользователя
+            userProfile.Name = input.Name;
+
+            // Сохраняем изменения
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                code = 200,
+                message = "Имя успешно обновлено"
+            });
+        }
+        [HttpPost("editPhone")]
+        public async Task<ActionResult<object>> EditPhone([FromBody] EditPhone input)
+        {
+            // Извлекаем токен из заголовка запроса
+            var tokenString = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!Guid.TryParse(tokenString, out Guid token))
+            {
+                return BadRequest(new
+                {
+                    code = 400,
+                    message = "Неверный формат токена"
+                });
+            }
+
+            // Ищем профиль пользователя по токену
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.Token == token);
+
+            if (userProfile == null)
+            {
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Пользовательский профиль не найден"
+                });
+            }
+
+            // Обновляем номер телефона пользователя
+            userProfile.PhoneNumber = input.PhoneNumber;
+
+            // Сохраняем изменения
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                code = 200,
+                message = "Номер телефона успешно обновлен"
+            });
+        }
+
 
 
 

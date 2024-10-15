@@ -28,6 +28,14 @@ public partial class DiplombdContext : DbContext
         public string Email { get; set; }
         public string Password { get; set; }
     }
+    public class EditName
+    {
+        public string Name { get; set; }
+    }
+    public class EditPhone
+    {
+        public string PhoneNumber { get; set; }
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
