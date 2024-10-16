@@ -36,6 +36,10 @@ public partial class DiplombdContext : DbContext
     {
         public string PhoneNumber { get; set; }
     }
+    public class EditPassword
+    {
+        public string Password { get; set; }
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -239,6 +239,34 @@ namespace DiplomApi.Controllers
                 message = "Номер телефона успешно обновлен"
             });
         }
+        [HttpPost("editPassword")]
+        public async Task<ActionResult<object>> EditPassword([FromBody] AccountInput input)
+        {
+            // Ищем аккаунт по email
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == input.Email);
+
+            if (account == null)
+            {
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Аккаунт с таким email не найден"
+                });
+            }
+
+            // Обновляем пароль аккаунта
+            account.Password = input.Password;
+
+            // Сохраняем изменения
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                code = 200,
+                message = "Пароль успешно обновлен"
+            });
+        }
+
 
 
 
