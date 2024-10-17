@@ -240,22 +240,44 @@ namespace DiplomApi.Controllers
             });
         }
         [HttpPost("editPassword")]
-        public async Task<ActionResult<object>> EditPassword([FromBody] AccountInput input)
+        public async Task<ActionResult<object>> EditPassword([FromBody] EditPassword input)
         {
-            // Ищем аккаунт по email
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == input.Email);
+            // Извлекаем токен из заголовка запроса
+            var tokenString = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!Guid.TryParse(tokenString, out Guid token))
+            {
+                return BadRequest(new
+                {
+                    code = 400,
+                    message = "Неверный формат токена"
+                });
+            }
+
+            // Ищем аккаунт по токену
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Token == token);
 
             if (account == null)
             {
                 return NotFound(new
                 {
                     code = 404,
-                    message = "Аккаунт с таким email не найден"
+                    message = "Аккаунт не найден"
+                });
+            }
+
+            // Проверяем, совпадает ли старый пароль
+            if (account.Password != input.OldPassword)
+            {
+                return Unauthorized(new
+                {
+                    code = 401,
+                    message = "Неверный текущий пароль"
                 });
             }
 
             // Обновляем пароль аккаунта
-            account.Password = input.Password;
+            account.Password = input.NewPassword;
 
             // Сохраняем изменения
             await _context.SaveChangesAsync();
@@ -266,6 +288,7 @@ namespace DiplomApi.Controllers
                 message = "Пароль успешно обновлен"
             });
         }
+
 
 
 

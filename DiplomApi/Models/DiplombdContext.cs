@@ -38,7 +38,8 @@ public partial class DiplombdContext : DbContext
     }
     public class EditPassword
     {
-        public string Password { get; set; }
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
