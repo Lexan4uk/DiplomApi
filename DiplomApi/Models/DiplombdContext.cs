@@ -16,6 +16,7 @@ public partial class DiplombdContext : DbContext
     }
 
     public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<Address> Addresses { get; set; }
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
@@ -64,6 +65,23 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .HasColumnName("password");
+        });
+        modelBuilder.Entity<Address>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Adresses__3213E83FD4046055");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.Address1)
+                .HasMaxLength(100)
+                .HasColumnName("address");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(10)
+                .HasColumnName("phone");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
