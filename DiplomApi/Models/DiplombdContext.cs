@@ -20,6 +20,10 @@ public partial class DiplombdContext : DbContext
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
+    public virtual DbSet<BoquetCompleted> BoquetCompleteds { get; set; }
+
+    public virtual DbSet<BoquetConstructor> BoquetConstructors { get; set; }
+
     public class EmailInput
     {
         public string Email { get; set; }
@@ -66,6 +70,7 @@ public partial class DiplombdContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("password");
         });
+
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Adresses__3213E83FD4046055");
@@ -82,6 +87,48 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(10)
                 .HasColumnName("phone");
+        });
+
+        modelBuilder.Entity<BoquetCompleted>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83FAB1E0126");
+
+            entity.ToTable("BoquetCompleted");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.Cover).HasColumnName("cover");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.OldPrice).HasColumnName("old_price");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Promo).HasColumnName("promo");
+        });
+
+        modelBuilder.Entity<BoquetConstructor>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83F409FF6CA");
+
+            entity.ToTable("BoquetConstructor");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Cover)
+                .HasMaxLength(255)
+                .HasColumnName("cover");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("price");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .HasColumnName("type");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
