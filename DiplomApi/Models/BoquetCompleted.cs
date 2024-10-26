@@ -7,11 +7,13 @@ public partial class BoquetCompleted
 {
     public Guid Id { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public int? Price { get; set; }
+    public string Link { get; set; } = null!;
 
-    public int? OldPrice { get; set; }
+    public decimal? Price { get; set; }
+
+    public decimal? OldPrice { get; set; }
 
     public bool? Promo { get; set; }
 

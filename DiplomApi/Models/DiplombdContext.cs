@@ -91,21 +91,34 @@ public partial class DiplombdContext : DbContext
 
         modelBuilder.Entity<BoquetCompleted>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83FAB1E0126");
+            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83FC31940C3");
 
             entity.ToTable("BoquetCompleted");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("id");
-            entity.Property(e => e.Cover).HasColumnName("cover");
-            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Cover)
+                .HasMaxLength(255)
+                .HasColumnName("cover");
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasColumnName("description");
+            entity.Property(e => e.Link)
+                .HasMaxLength(100)
+                .HasColumnName("link");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
-            entity.Property(e => e.OldPrice).HasColumnName("old_price");
-            entity.Property(e => e.Price).HasColumnName("price");
-            entity.Property(e => e.Promo).HasColumnName("promo");
+            entity.Property(e => e.OldPrice)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("old_price");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("price");
+            entity.Property(e => e.Promo)
+                .HasDefaultValue(false)
+                .HasColumnName("promo");
         });
 
         modelBuilder.Entity<BoquetConstructor>(entity =>

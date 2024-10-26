@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// обновление миграции Scaffold-DbContext "Server=DESKTOP-HG5GD1F;Database=diplombd;User id=sa;Password=111;Encrypt=false" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models –Force
 builder.Services.AddControllers();
 
 // Добавляем CORS
