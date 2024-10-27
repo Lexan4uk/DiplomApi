@@ -44,5 +44,23 @@ namespace DiplomApi.Controllers
             var boquetConstructor = await _context.BoquetConstructors.ToListAsync();
             return Ok(boquetConstructor);
         }
+        [HttpGet("getBoquetByLink/{link}")]
+        public async Task<ActionResult<BoquetCompleted>> GetBoquetByLink(string link)
+        {
+            if (_context.BoquetCompleteds == null)
+            {
+                return NotFound();
+            }
+
+            var boquet = await _context.BoquetCompleteds
+                                        .FirstOrDefaultAsync(b => b.Link == link);
+
+            if (boquet == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(boquet);
+        }
     }
 }
