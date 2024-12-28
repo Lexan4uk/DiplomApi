@@ -62,5 +62,25 @@ namespace DiplomApi.Controllers
 
             return Ok(boquet);
         }
+        [HttpGet("getBoquetAdditions")]
+        public async Task<ActionResult<IEnumerable<BoquetConstructor>>> GetBoquetAdditions()
+        {
+            if (_context.BoquetConstructors == null)
+            {
+                return NotFound();
+            }
+
+            var additions = await _context.BoquetConstructors
+                                          .Where(b => b.Type == "ribbon" || b.Type == "wrappapper")
+                                          .ToListAsync();
+
+            if (!additions.Any())
+            {
+                return NotFound("No additions with types 'ribbon' or 'wrappapper' found.");
+            }
+
+            return Ok(additions);
+        }
+
     }
 }
