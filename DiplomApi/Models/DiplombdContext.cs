@@ -119,6 +119,9 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Promo)
                 .HasDefaultValue(false)
                 .HasColumnName("promo");
+            entity.Property(e => e.Composition)
+                .HasDefaultValue(false)
+                .HasColumnName("composition");
         });
 
         modelBuilder.Entity<BoquetConstructor>(entity =>
