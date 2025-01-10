@@ -16,13 +16,18 @@ public partial class DiplombdContext : DbContext
     }
 
     public virtual DbSet<Account> Accounts { get; set; }
-    public virtual DbSet<Address> Addresses { get; set; }
 
-    public virtual DbSet<UserProfile> UserProfiles { get; set; }
+    public virtual DbSet<Address> Addresses { get; set; }
 
     public virtual DbSet<BoquetCompleted> BoquetCompleteds { get; set; }
 
     public virtual DbSet<BoquetConstructor> BoquetConstructors { get; set; }
+
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
     public class EmailInput
     {
@@ -51,12 +56,11 @@ public partial class DiplombdContext : DbContext
     {
 
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Token).HasName("PK__Accounts__CA90DA7BC10B60BF");
+            entity.HasKey(e => e.Token).HasName("PK__Accounts__CA90DA7B0C17446D");
 
             entity.ToTable(tb => tb.HasTrigger("trg_InsertUserProfile"));
 
@@ -91,13 +95,14 @@ public partial class DiplombdContext : DbContext
 
         modelBuilder.Entity<BoquetCompleted>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83FC31940C3");
+            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83F482246E4");
 
             entity.ToTable("BoquetCompleted");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("id");
+            entity.Property(e => e.Composition).HasColumnName("composition");
             entity.Property(e => e.Cover)
                 .HasMaxLength(255)
                 .HasColumnName("cover");
@@ -119,14 +124,11 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Promo)
                 .HasDefaultValue(false)
                 .HasColumnName("promo");
-            entity.Property(e => e.Composition)
-                .HasDefaultValue(false)
-                .HasColumnName("composition");
         });
 
         modelBuilder.Entity<BoquetConstructor>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83F409FF6CA");
+            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83F5D8B915F");
 
             entity.ToTable("BoquetConstructor");
 
@@ -145,6 +147,48 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Type)
                 .HasMaxLength(50)
                 .HasColumnName("type");
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Orders__3213E83FDFB00708");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.BoquetName)
+                .HasMaxLength(255)
+                .HasColumnName("boquet_name");
+            entity.Property(e => e.BoquetPrice)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("boquet_price");
+            entity.Property(e => e.ClientName)
+                .HasMaxLength(255)
+                .HasColumnName("client_name");
+            entity.Property(e => e.ClientPhone)
+                .HasMaxLength(15)
+                .HasColumnName("client_phone");
+            entity.Property(e => e.OrderState)
+                .HasMaxLength(50)
+                .HasColumnName("order_state");
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Reviews__3213E83FB4526F84");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.BoquetName)
+                .HasMaxLength(255)
+                .HasColumnName("boquet_name");
+            entity.Property(e => e.ClientName)
+                .HasMaxLength(255)
+                .HasColumnName("client_name");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.Rating).HasColumnName("rating");
+            entity.Property(e => e.Text).HasColumnName("text");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
