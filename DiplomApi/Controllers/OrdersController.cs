@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiplomApi.Models;
-using static DiplomApi.Models.DiplombdContext;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace DiplomApi.Controllers
 {
@@ -21,6 +19,18 @@ namespace DiplomApi.Controllers
         {
             _context = context;
         }
+        [HttpGet("getOrders")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetOrders()
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            var orders = await _context.Orders.ToListAsync();
+            return Ok(orders);
+        }
+
         [HttpPost("addOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
@@ -31,7 +41,6 @@ namespace DiplomApi.Controllers
 
             try
             {
-
                 // Установка состояния заказа по умолчанию
                 if (string.IsNullOrEmpty(order.OrderState))
                 {
@@ -54,9 +63,68 @@ namespace DiplomApi.Controllers
             }
         }
 
+        [HttpPatch("updateToDone/{id}")]
+        public async Task<IActionResult> UpdateOrderToDone(Guid id)
+        {
+            try
+            {
+                var order = await _context.Orders.FindAsync(id);
+                if (order == null)
+                {
+                    return NotFound(new { message = "Order not found." });
+                }
 
+                if (order.OrderState != "Pending")
+                {
+                    return BadRequest(new { message = "Order state must be 'Pending' to update to 'Done'." });
+                }
 
+                order.OrderState = "Done";
+                _context.Entry(order).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
 
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Order state updated to 'Done'."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPatch("updateToReviewed/{id}")]
+        public async Task<IActionResult> UpdateOrderToReviewed(Guid id)
+        {
+            try
+            {
+                var order = await _context.Orders.FindAsync(id);
+                if (order == null)
+                {
+                    return NotFound(new { message = "Order not found." });
+                }
+
+                if (order.OrderState != "Done")
+                {
+                    return BadRequest(new { message = "Order state must be 'Done' to update to 'Reviewed'." });
+                }
+
+                order.OrderState = "Reviewed";
+                _context.Entry(order).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Order state updated to 'Reviewed'."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
-
 }

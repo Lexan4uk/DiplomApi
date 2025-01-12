@@ -26,7 +26,11 @@ namespace DiplomApi.Controllers
         {
             if (review == null)
             {
-                return BadRequest("Review is null.");
+                return BadRequest(new
+                {
+                    code = 400,
+                    message = "Review is null."
+                });
             }
 
             try
@@ -37,7 +41,21 @@ namespace DiplomApi.Controllers
                 // Если заказ не найден, возвращаем ошибку
                 if (order == null)
                 {
-                    return NotFound($"Order with ID {review.OrderId} not found.");
+                    return NotFound(new
+                    {
+                        code = 404,
+                        message = $"Order with ID {review.OrderId} not found."
+                    });
+                }
+
+                // Проверяем состояние заказа
+                if (order.OrderState != "Done")
+                {
+                    return BadRequest(new
+                    {
+                        code = 400,
+                        message = "Cannot add review. Order state must be 'Done'."
+                    });
                 }
 
                 // Связываем заказ с отзывом
@@ -46,17 +64,31 @@ namespace DiplomApi.Controllers
                 // Добавляем отзыв в контекст
                 _context.Reviews.Add(review);
 
+                // Обновляем состояние заказа на "Reviewed"
+                order.OrderState = "Reviewed";
+
                 // Сохраняем изменения в базе данных
                 await _context.SaveChangesAsync();
 
                 // Возвращаем успешный ответ
-                return Ok(review);
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Review added successfully and order state updated to 'Reviewed'.",
+                    review
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
             }
         }
+
+
         [HttpGet("getReviews")]
         public async Task<ActionResult<IEnumerable<Review>>> GetReviews()
         {

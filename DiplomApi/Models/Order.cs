@@ -17,4 +17,6 @@ public partial class Order
 
     public string OrderState { get; set; } = null!;
 
+    public string? Cover { get; set; }
+
 }

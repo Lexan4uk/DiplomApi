@@ -171,6 +171,10 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.OrderState)
                 .HasMaxLength(50)
                 .HasColumnName("order_state");
+            entity.Property(e => e.Cover)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("cover");
+
         });
 
         modelBuilder.Entity<Review>(entity =>
