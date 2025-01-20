@@ -41,13 +41,11 @@ namespace DiplomApi.Controllers
 
             try
             {
-                // Установка состояния заказа по умолчанию
                 if (string.IsNullOrEmpty(order.OrderState))
                 {
-                    order.OrderState = "Pending"; // Состояние по умолчанию
+                    order.OrderState = "Pending"; 
                 }
 
-                // Добавление заказа в базу данных
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
@@ -123,8 +121,68 @@ namespace DiplomApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
             }
         }
+
+        [HttpGet("getOrdersDone/{name}")]
+        public async Task<IActionResult> GetOrdersDone(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest(new
+                {
+                    code = 400,
+                    message = "The 'name' parameter cannot be null or empty."
+                });
+            }
+
+            if (_context.Orders == null)
+            {
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Orders not found in the database."
+                });
+            }
+
+            try
+            {
+                var doneOrders = await _context.Orders
+                    .Where(order => order.OrderState == "Done" && order.ClientName == name)
+                    .ToListAsync();
+
+                if (!doneOrders.Any())
+                {
+                    return NotFound(new
+                    {
+                        code = 404,
+                        message = $"No orders found for client '{name}' with state 'Done'."
+                    });
+                }
+
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Orders retrieved successfully.",
+                    data = doneOrders
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
+
+
     }
 }
