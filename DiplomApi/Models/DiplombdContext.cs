@@ -19,6 +19,8 @@ public partial class DiplombdContext : DbContext
 
     public virtual DbSet<Address> Addresses { get; set; }
 
+    public virtual DbSet<AdminAcc> AdminAccs { get; set; }
+
     public virtual DbSet<BoquetCompleted> BoquetCompleteds { get; set; }
 
     public virtual DbSet<BoquetConstructor> BoquetConstructors { get; set; }
@@ -91,6 +93,21 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(10)
                 .HasColumnName("phone");
+        });
+
+        modelBuilder.Entity<AdminAcc>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__AdminAcc__3213E83F21AFBF67");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.Login)
+                .HasMaxLength(50)
+                .HasColumnName("login");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .HasColumnName("password");
         });
 
         modelBuilder.Entity<BoquetCompleted>(entity =>
@@ -171,10 +188,6 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.OrderState)
                 .HasMaxLength(50)
                 .HasColumnName("order_state");
-            entity.Property(e => e.Cover)
-                .HasColumnType("nvarchar(max)")
-                .HasColumnName("cover");
-
         });
 
         modelBuilder.Entity<Review>(entity =>
