@@ -100,6 +100,123 @@ namespace DiplomApi.Controllers
             var reviews = await _context.Reviews.ToListAsync();
             return Ok(reviews);
         }
+        [HttpGet("getReviewsApproved")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetReviewsApproved()
+        {
+            if (_context.Reviews == null)
+            {
+                return NotFound(new
+                {
+                    code = 404,
+                    message = "Reviews not found in the database."
+                });
+            }
+
+            try
+            {
+                var approvedReviews = await _context.Reviews
+                    .Where(r => r.Approved == true)
+                    .ToListAsync();
+
+                if (!approvedReviews.Any())
+                {
+                    return NotFound(new
+                    {
+                        code = 404,
+                        message = "No approved reviews found."
+                    });
+                }
+
+                return Ok(approvedReviews);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+        [HttpPatch("approveReview/{id}")]
+        public async Task<IActionResult> ApproveReview(Guid id)
+        {
+            try
+            {
+                var review = await _context.Reviews.FindAsync(id);
+                if (review == null)
+                {
+                    return NotFound(new
+                    {
+                        code = 404,
+                        message = "Review not found."
+                    });
+                }
+
+                if (review.Approved)
+                {
+                    return BadRequest(new
+                    {
+                        code = 400,
+                        message = "Review is already approved."
+                    });
+                }
+
+                review.Approved = true;
+                _context.Entry(review).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Review approved successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+        [HttpDelete("deleteReview/{id}")]
+        public async Task<IActionResult> DeleteReview(Guid id)
+        {
+            try
+            {
+                var review = await _context.Reviews.FindAsync(id);
+                if (review == null)
+                {
+                    return NotFound(new
+                    {
+                        code = 404,
+                        message = "Review not found."
+                    });
+                }
+
+                _context.Reviews.Remove(review);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Review deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
+
+
 
 
     }

@@ -16,6 +16,8 @@ public partial class Review
     public Guid OrderId { get; set; }
 
     public int? Rating { get; set; }
+    public bool Approved { get; set; } = false;
+
 
     public virtual Order? Order { get; set; }
 }

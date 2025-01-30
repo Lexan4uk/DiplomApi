@@ -206,6 +206,9 @@ public partial class DiplombdContext : DbContext
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.Rating).HasColumnName("rating");
             entity.Property(e => e.Text).HasColumnName("text");
+            entity.Property(e => e.Approved)
+                .HasDefaultValue(false)
+                .HasColumnName("approved");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>

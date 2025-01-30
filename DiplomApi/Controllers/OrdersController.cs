@@ -181,6 +181,36 @@ namespace DiplomApi.Controllers
                 });
             }
         }
+        [HttpDelete("deleteOrder/{id}")]
+        public async Task<IActionResult> DeleteOrder(Guid id)
+        {
+            try
+            {
+                var order = await _context.Orders.FindAsync(id);
+                if (order == null)
+                {
+                    return NotFound(new { message = "Order not found." });
+                }
+
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    code = 200,
+                    message = "Order deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
 
 
 
