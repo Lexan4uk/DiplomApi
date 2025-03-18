@@ -23,8 +23,6 @@ public partial class DiplombdContext : DbContext
 
     public virtual DbSet<BoquetCompleted> BoquetCompleteds { get; set; }
 
-    public virtual DbSet<BoquetConstructor> BoquetConstructors { get; set; }
-
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
@@ -143,28 +141,6 @@ public partial class DiplombdContext : DbContext
                 .HasColumnName("promo");
         });
 
-        modelBuilder.Entity<BoquetConstructor>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__BoquetCo__3213E83F5D8B915F");
-
-            entity.ToTable("BoquetConstructor");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.Cover)
-                .HasMaxLength(255)
-                .HasColumnName("cover");
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .HasColumnName("name");
-            entity.Property(e => e.Price)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("price");
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .HasColumnName("type");
-        });
 
         modelBuilder.Entity<Order>(entity =>
         {
